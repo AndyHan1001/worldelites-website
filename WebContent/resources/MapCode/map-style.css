@@ -1,0 +1,33 @@
+﻿/* reset */
+
+#mapwrapper
+{
+	width:800px;
+	margin:0 auto;
+	padding:0px 0;
+	background-color:#ffffff;
+	min-width:220px;
+}
+svg{
+  height:500px;
+}
+
+.unselectable {
+	-moz-user-select:none;
+	-webkit-user-select:none;
+}
+.tip{
+	display:none;
+	padding:5px;
+	border:1px solid #EBECED;
+	color:#edeef0;
+	font-weight: bold;
+	font-size:14px;
+	z-index:1000;
+	float:left;
+	position:absolute;
+	/*gradient color*/
+	background:#555555;
+	word-break:keep-all;
+	white-space:nowrap;
+}

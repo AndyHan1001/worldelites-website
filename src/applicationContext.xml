@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       										http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       										http://www.springframework.org/schema/context 
+            								http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            								http://www.springframework.org/schema/aop 
+            								http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+            								http://www.springframework.org/schema/cache
+            								http://www.springframework.org/schema/cache/spring-cache-3.2.xsd
+            								http://www.springframework.org/schema/tx 
+            								http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+            								http://www.springframework.org/schema/mvc   
+    										http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <!-- 打开Spring的Annotation支持，spring支持注解 -->
+    <context:annotation-config />
+	<!-- 搜索所定义的包下的所有注解 -->
+	<context:component-scan base-package="com.zq.worldelites" />
+	
+	
+		<!-- 配置拦截器  拦截某地址下的请求 .*/entryOrJsonController\.html\?action=reg.* -->
+	 <mvc:interceptors>  
+		<mvc:interceptor>  
+			<mvc:mapping path="/*.html"/>	
+			<mvc:mapping path="/*/*.html"/>	
+			<mvc:mapping path="/*/*/*.html"/>
+      		<bean class="com.zq.worldelites.interceptor.LoginInterceptor" />  
+      	</mvc:interceptor>  
+    </mvc:interceptors>
+	
+	<!-- 设置jdbc连接配置文档 -->
+	<context:property-placeholder location="classpath:/hibernate.properties" />
+	<!-- 配置JDBC数据源 (使用c3p0配置连接池) 需要注意一点的是使用不同的类库，即class的值不同，那么其中的property的name可能就会不同 Start -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${dataSource.driverClassName}" />
+		<property name="jdbcUrl" value="${dataSource.url}" />
+		<property name="user" value="${dataSource.username}" />
+		<property name="password" value="${dataSource.password}" />
+		<!--连接池中保留的最小连接数。 -->
+		<property name="minPoolSize" value="5"/>
+		<!--连接池中保留的最大连接数。默认: 15 -->
+		<property name="maxPoolSize"  value="30" />
+		<!--初始化时获取的连接数，取值应在minPoolSize与maxPoolSize之间。Default: 3 -->
+		<property name="initialPoolSize"  value="10" />
+		<!--最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->
+		<property name="maxIdleTime"  value="60" />
+		<!--当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。Default: 3 -->
+		<property name="acquireIncrement"  value="5" />
+		<!--JDBC的标准参数，用以控制数据源内加载的PreparedStatements数量。但由于预缓存的statements 属于单个connection而不是整个连接池。所以设置这个参数需要考虑到多方面的因素。 
+			如果maxStatements与maxStatementsPerConnection均为0，则缓存被关闭。Default: 0 -->
+		<property name="maxStatements"  value="0" />
+		<!--每60秒检查所有连接池中的空闲连接。Default: 0 -->
+		<property name="idleConnectionTestPeriod"  value="60" />
+		<!--定义在从数据库获取新连接失败后重复尝试的次数。Default: 30 -->
+		<property name="acquireRetryAttempts"  value="30" />
+		<!--获取连接失败将会引起所有等待连接池来获取连接的线程抛出异常。但是数据源仍有效 保留，并在下次调用getConnection()的时候继续尝试获取连接。如果设为true，那么在尝试 
+			获取连接失败后该数据源将申明已断开并永久关闭。Default: false -->
+		<property name="breakAfterAcquireFailure"  value="true" />
+		<!--因性能消耗大请只在需要的时候使用它。如果设为true那么在每个connection提交的 时候都将校验其有效性。建议使用idleConnectionTestPeriod或automaticTestTable 
+			等方法来提升连接测试的性能。Default: false -->
+		<property name="testConnectionOnCheckout" value="false" />
+	</bean>
+	<!-- 配置JDBC数据源 End -->
+	<!-- 配置JDBC会话 Start -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<!-- 注入数据源 -->
+		<property name="dataSource" ref="dataSource" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${dataSource.dialect}</prop>
+				<!-- 设定表生成策略 create为自动创建表（于tomcat启动时） update只对表增删改差，不创建表 -->
+				<prop key="hibernate.hbm2ddl.auto">${dataSource.hbm2ddl.auto}</prop>
+				<!-- 在控制台是否输出hibernate生成的原SQL -->
+				<prop key="hibernate.show_sql">true</prop>
+				<!-- 是否格式化SQL -->
+				<prop key="hibernate.format_sql">true</prop>
+			</props>
+		</property>
+		<property name="packagesToScan">
+			<list>
+				<value>com.zq.worldelites.model</value><!-- 扫描此包下实体类， 也就是平时所说的 model -->
+			</list>
+		</property>
+	</bean>
+	<!-- 配置JDBC会话 End -->
+	<!-- 将JDBC会话注入 hibernateTemplate -->
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+
+
+	<!-- 配置事务管理 -->
+	<bean id="txManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<!-- 启动事务的注解，即Service中加的@Transactional -->
+	<tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
+	
+	<!-- 支持 aop切面 注解 -->
+	<!-- JTA事务（非分布式事务）， 事务配置的时候 ，不能指定dataSource属性（分布式事务，是有全局事务来管理数据库链接的）-->   
+	<!-- 基于类的代理将起作用  如果设置为false或者此项省略，那么标准的JDK基于接口的代理将起作用-->  
+	<!-- <aop:aspectj-autoproxy  /> -->
+	
+	<!-- 上方已经添加了以注解的方式添加事物，所以下方的配置就不需要了，下方是用来规定开发人员对某些方法名字的定义等等 -->
+	<!-- <aop:config>
+		<aop:pointcut expression="execution(public * com.mvc.service.*.*(..))"
+			id="businessService" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="businessService" />
+	</aop:config>
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="find*" read-only="true" propagation="NOT_SUPPORTED" />
+			get 开头的方法不需要在事务中运行 。 有些情况是没有必要使用事务的， 比如获取数据。开启事务本身对性能是有一定的影响的
+			<tx:method name="*" />
+			其他方法在实务中运行
+		</tx:attributes>
+	</tx:advice> -->
+	
+	<!-- 缓存配置 -->
+  	<!-- 启用缓存注解功能(请将其配置在Spring主配置文件中) -->
+	<!-- <cache:annotation-driven cache-manager="cacheManager"/> -->
+	 <!-- Spring自己的基于java.util.concurrent.ConcurrentHashMap实现的缓存管理器(该功能是从Spring3.1开始提供的) -->
+  <!-- 
+  <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
+    <property name="caches">
+      <set>
+        <bean name="myCache" class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"/>
+      </set>
+    </property>
+  </bean>
+   -->
+  <!-- 若只想使用Spring自身提供的缓存器,则注释掉下面的两个关于Ehcache配置的bean,并启用上面的SimpleCacheManager即可 -->
+  <!-- Spring提供的基于的Ehcache实现的缓存管理器 -->
+	
+	<!--缓存的配置   需要使用缓存的时候把一下两个bean打开--> 
+ <!--    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" >
+    	<property name="cacheManager">
+			<ref local="cacheMg"/>
+		</property>
+    </bean>
+	<bean id="cacheMg" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" >
+		<property name="configLocation">
+			<value>classpath:ehcache.xml</value>
+		</property>
+	</bean> -->
+	
+	
+	<!-- SpringMVC提供的上传文件的类库，在Controller的方法中直接添加参数@RequestParam MultipartFile uploadFile即可获得 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+	
+	<!-- 异常配置  暂时还没弄懂具体的使用方法-->
+	<!-- <bean id="exceptionResolver" class="com.ailk.aisas.handler.ExceptionHandler" /> -->
+
+</beans>  

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+										http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+										http://www.springframework.org/schema/context 
+										http://www.springframework.org/schema/context/spring-context-3.0.xsd 
+										http://www.springframework.org/schema/mvc 
+										http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd 
+										http://www.springframework.org/schema/util 
+										http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+	
+	<!-- 定时任务，刷新系统公共数据 -->						
+	<bean id="timeTask" class="com.ciexpo.controller.TimeTask"/> 
+		
+	<!-- 定义定时任务的调用对象和调用对象的方法,JOB的别名为demoJob -->			
+	<bean id="doSomething"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		<!-- targetObject定义目标任务，其中ref中的bean="demoTask"为引用的定时任务别名 -->
+	    <property name="targetObject">  
+	        <ref bean="timeTask"/>  
+	    </property>  
+	    <!-- 定义目标任务的方法，其中work为目标任务的方法 -->
+	    <property name="targetMethod">  
+	        <value>run</value>  
+	    </property>         
+	</bean>  
+	
+	
+	<!-- 触发器，定义触发时间用于触发JOB(job的别名为demoJob) -->		
+	<bean id="doTime" class="org.springframework.scheduling.quartz.CronTriggerBean">  
+	    <property name="jobDetail">  
+	        <ref bean="doSomething"/>  
+	    </property>  
+	    <!-- 每天凌晨01:15分执行(24小时制)0 15 1 * * ? *    0 15 1 * * ? *-->
+		<!-- 测试 10秒一次 0/10 * * * * ? -->
+	    <property name="cronExpression">  
+	        <value>*/1 * * * * ?</value>  
+	    </property>         
+	</bean> 
+	
+	
+	<!-- 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序,lazy-init="true"则不启动 -->			
+ 	<bean id="toDo" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">  
+	    <property name="triggers">  
+	        <list>  
+	            <ref bean="doTime" />  
+	        </list>  
+	    </property>  
+	</bean>  
+	 
+	
+ 
+</beans>

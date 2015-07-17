@@ -1,0 +1,270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+  <title>Load map with navigation bar module</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+  <script type="text/javascript">
+var map = null;
+var searchManager = null;
+var locations = [];
+var markers   = [];
+      var directionsManager;
+      var directionsErrorEventObj;
+      var directionsUpdatedEventObj; 
+
+var skey="";
+var zom = 14;
+
+var lat = 45.8262627;
+var lng = 1.2583593;
+var sid=234;
+
+
+var u_lat = 45.8189652;
+var u_lng = 1.2714002;
+var u_sid=12;
+
+  function getMap()
+  {
+	var options = {
+		zoom: zom,
+		center: new Microsoft.Maps.Location(lat, lng),
+		credentials: "AuK844ZHhLCEoLKodhYOlkb2yw_3t4xYKuvvPO_ujTbSD3F_xi354XYsa7XmKXJD ",
+		mapTypeId: Microsoft.Maps.MapTypeId.road,
+		center: new Microsoft.Maps.Location((lat+u_lat)/2,(lng+u_lng)/2)
+	}
+	
+	map = new Microsoft.Maps.Map(document.getElementById('myMap'),options);
+	showApartMent();
+  }
+
+function showApartMent()
+{
+	locations.push([u_lat,u_lng,'MapCode/ico_unt.png',u_sid,100]);
+	locations.push([lat,lng,'MapCode/ico_apt.png',sid,101]);
+	for(var i = 0; i < locations.length; i++) {
+		makeMarker(locations[i]);
+	}
+}
+function makeMarker(location) {
+	var lat 	 = location[0];
+	var long     = location[1];
+	var icon     = location[2];
+	var id       = location[3];
+	var type     = location[4];
+	var position = new Microsoft.Maps.Location(lat, long);
+	var marker   = new Microsoft.Maps.Pushpin(position, {icon: icon, width: 30, height: 48});
+	map.entities.push(marker);
+}
+
+
+
+
+  function createSearchManager() 
+  {
+      map.addComponent('searchManager', new Microsoft.Maps.Search.SearchManager(map)); 
+      searchManager = map.getComponent('searchManager'); 
+  }
+  function LoadSearchModule(s)
+  {
+	skey=s;
+	document.getElementById("directionsItinerary").innerHTML="";
+    Microsoft.Maps.loadModule('Microsoft.Maps.Search', { callback: searchRequest });
+
+  }
+  function searchRequest() 
+  { 
+    createSearchManager(); 
+    var what =skey; 
+    var userData = { name: 'WorldElite', id: '10001' }; 
+    //var where = 'boston, ma'; 
+    var request = 
+        { 
+            what: what, 
+            count: 10, 
+            startIndex: 0, 
+            bounds: map.getBounds(), 
+            callback: search_onSearchSuccess, 
+            errorCallback: search_onSearchFailure, 
+            userData: userData 
+        }; 
+    searchManager.search(request); 
+  } 
+  function search_onSearchSuccess(result, userData) 
+  { 
+    map.entities.clear(); 
+    var searchResults = result && result.searchResults; 
+    if (searchResults) { 
+        for (var i = 0; i < searchResults.length; i++) { 
+            search_createMapPin(searchResults[i]); 
+        } 
+        if (result.searchRegion && result.searchRegion.mapBounds) { 
+            map.setView({ bounds: result.searchRegion.mapBounds.locationRect }); 
+        } 
+        else 
+        { 
+            alert('No results returned, Please try after sometime.'); 
+        } 
+		showApartMent();
+    } 
+  } 
+  function search_createMapPin(result) 
+  { 
+    if (result) { 
+        var pin = new Microsoft.Maps.Pushpin(result.location, null); 
+        Microsoft.Maps.Events.addHandler(pin, 'click', function () { search_showInfoBox(result) }); 
+        map.entities.push(pin); 
+    } 
+  } 
+  function search_showInfoBox(result) 
+  { 
+    if (currInfobox) { 
+        currInfobox.setOptions({ visible: true }); 
+        map.entities.remove(currInfobox); 
+    } 
+    currInfobox = new Microsoft.Maps.Infobox( 
+        result.location, 
+        { 
+            title: result.name, 
+            description: [result.address, result.city, result.state, result.country, result.phone].join(' '), 
+            showPointer: true, 
+            titleAction: null, 
+            titleClickHandler: null 
+        }); 
+    currInfobox.setOptions({ visible: true }); 
+    map.entities.push(currInfobox); 
+  } 
+  function search_onSearchFailure(result, userData) 
+  { 
+    alert('Search failed'); 
+  } 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+      function createDirectionsManager()
+      {
+          var displayMessage;
+          if (!directionsManager) 
+          {
+              directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
+              displayMessage = 'Directions Module loaded\n';
+              displayMessage += 'Directions Manager loaded';
+          }
+          directionsManager.resetDirections();
+          directionsErrorEventObj = Microsoft.Maps.Events.addHandler(directionsManager, 'directionsError', function(arg) { alert("no result"); });
+          directionsUpdatedEventObj = Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', function() { });
+      }
+      
+      function createDrivingRoute()
+      {
+        if (!directionsManager) { createDirectionsManager(); }
+        directionsManager.resetDirections();
+        // Set Route Mode to driving 
+        directionsManager.setRequestOptions({ routeMode: Microsoft.Maps.Directions.RouteMode.driving });
+        var seattleWaypoint = new Microsoft.Maps.Directions.Waypoint({location: new Microsoft.Maps.Location(u_lat, u_lng)});
+        directionsManager.addWaypoint(seattleWaypoint);
+        var tacomaWaypoint = new Microsoft.Maps.Directions.Waypoint({location: new Microsoft.Maps.Location(lat, lng) });
+        directionsManager.addWaypoint(tacomaWaypoint);
+        // Set the element in which the itinerary will be rendered
+        directionsManager.setRenderOptions({ itineraryContainer: document.getElementById('directionsItinerary') });
+        directionsManager.calculateDirections();
+      }
+
+      function createDirectionsDriving() {
+        if (!directionsManager)
+        {
+          Microsoft.Maps.loadModule('Microsoft.Maps.Directions', { callback: createDrivingRoute });
+        }
+        else
+        {
+          createDrivingRoute();
+        }
+       }
+	   
+	   
+	function createTransitRoute()
+	{
+        if (!directionsManager) { createDirectionsManager(); }
+        directionsManager.resetDirections();
+        directionsManager.setRequestOptions({ routeMode: Microsoft.Maps.Directions.RouteMode.transit });
+        var seattleWaypoint = new Microsoft.Maps.Directions.Waypoint({ location: new Microsoft.Maps.Location(u_lat, u_lng) });
+        directionsManager.addWaypoint(seattleWaypoint);
+        var bellevueWaypoint = new Microsoft.Maps.Directions.Waypoint({ location: new Microsoft.Maps.Location(lat, lng) });
+        directionsManager.addWaypoint(bellevueWaypoint);
+        // Set the element in which the itinerary will be rendered
+        directionsManager.setRenderOptions({ itineraryContainer: document.getElementById('directionsItinerary') });
+        directionsManager.calculateDirections();
+      }
+
+	
+ 	function createDirectionsTransit()
+      {
+        if (!directionsManager)
+        {
+          Microsoft.Maps.loadModule('Microsoft.Maps.Directions', { callback: createTransitRoute });
+        }
+        else
+        {
+          createTransitRoute();
+        }
+      }
+	   
+	   
+	   
+      function createWalkingRoute()
+      {
+        if (!directionsManager) { createDirectionsManager(); }
+        directionsManager.resetDirections();
+        // Set Route Mode to walking 
+        directionsManager.setRequestOptions({ routeMode: Microsoft.Maps.Directions.RouteMode.walking });
+        var seattleWaypoint = new Microsoft.Maps.Directions.Waypoint({ location: new Microsoft.Maps.Location(u_lat, u_lng)});
+        directionsManager.addWaypoint(seattleWaypoint);
+        var redmondWaypoint = new Microsoft.Maps.Directions.Waypoint({ location: new Microsoft.Maps.Location(lat, lng) });
+        directionsManager.addWaypoint(redmondWaypoint);
+        // Set the element in which the itinerary will be rendered
+        directionsManager.setRenderOptions({ itineraryContainer: document.getElementById('directionsItinerary') });
+        directionsManager.calculateDirections();
+      }
+
+      function createDirectionsWalking()
+      {
+        if (!directionsManager)
+        {
+          Microsoft.Maps.loadModule('Microsoft.Maps.Directions', { callback: createWalkingRoute });
+        }
+        else
+        {
+          createWalkingRoute();
+        }
+      }
+	   
+  </script>
+  </head>
+  <body onload="getMap();">
+    <div id='myMap' style="position:relative; width:800px; height:500px;"></div>
+    <div>
+        <input type="image" src="MapCode/ico_food.png" value="food" onclick="LoadSearchModule('food');" />
+        <input type="image" src="MapCode/ico_hotel.png" value="hotel" onclick="LoadSearchModule('hotel');" />
+        <input type="image" src="MapCode/ico_subway.png" value="subway" onclick="LoadSearchModule('subway');" />
+        <input type="image" src="MapCode/ico_bank.png" value="bank" onclick="LoadSearchModule('bank');" />
+        <input type="image" src="MapCode/ico_hospital.png" value="hospital" onclick="LoadSearchModule('hospital');" />
+        <input type="image" src="MapCode/ico_gas.png" value="gas" onclick="LoadSearchModule('gas');" />
+        <input type="image" src="MapCode/ico_coffee.png" value="coffee" onclick="LoadSearchModule('coffee');" />
+        <input type="image" src="MapCode/ico_cinema.png" value="cinema" onclick="LoadSearchModule('cinema');" />
+        <input type="image" src="MapCode/ico_shop.png" value="shop" onclick="LoadSearchModule('shop');" />
+    </div>
+    <div style="position:relative; margin-top:-60px; background-image:url(MapCode/oblank.png)">
+        <input type="image" src="MapCode/ico_walk.png" value="Walking" onclick="createDirectionsWalking();" />
+        <input type="image" src="MapCode/ico_driv.png" value="Driving" onclick="createDirectionsDriving();" />
+        <input type="image" src="MapCode/ico_tran.png" value="Transit" onclick="createDirectionsTransit();" />
+    </div>
+    <div id='directionsItinerary'> </div> 
+  </body>
+</html>

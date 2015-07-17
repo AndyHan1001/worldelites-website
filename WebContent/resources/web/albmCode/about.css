@@ -1,0 +1,58 @@
+* {
+	margin: 0px; padding: 0px;
+}
+
+#DB_gallery ul {
+	list-style: none; margin: 0px; padding: 0px;
+}
+#DB_gallery li {
+	list-style: none; margin: 0px; padding: 0px;
+}
+#DB_gallery img {
+	border: currentColor; vertical-align: top;
+}
+#DB_gallery .DB_imgSet {
+	width: 800px; height: 415px; overflow: hidden; position: relative; z-index:9998
+}
+#DB_gallery .DB_imgSet .DB_imgWin {
+	height: 100%;
+}
+#DB_gallery .DB_imgSet .DB_imgWin img{
+	width: 100%;
+}
+#DB_gallery .DB_imgSet .DB_page {
+	font: 11px/normal tahoma bold; padding: 5px; bottom: 0px; color: rgb(255, 255, 255); position: absolute; font-size-adjust: none; font-stretch: normal;
+}
+#DB_gallery .DB_imgSet .DB_page .DB_current {
+	color: rgb(255, 255, 0);
+}
+#DB_gallery .DB_imgSet .DB_page .DB_total {
+	color: rgb(255, 204, 0);
+}
+#DB_gallery .DB_imgSet .DB_prevBtn {
+	left: 0px; top: 50%; margin-top: -45px; position: absolute; cursor: pointer; z-index:9999
+}
+#DB_gallery .DB_imgSet .DB_nextBtn {
+	top: 50%; right: 0px; margin-top: -45px; position: absolute; cursor: pointer; z-index:9999
+}
+#DB_gallery .DB_thumSet {
+	width: 800px; overflow: hidden; margin-top: 10px; position: relative;
+}
+#DB_gallery .DB_thumSet .DB_thumMove {
+	font-size: 0px; white-space: nowrap; position: relative;
+}
+#DB_gallery .DB_thumSet .DB_thumMove li {
+	margin-right: 3px; display: inline;
+}
+#DB_gallery .DB_thumSet .DB_thumMove li img {
+	width: 108px; height: 73px;
+}
+#DB_gallery .DB_thumSet .DB_prevPageBtn {
+	left: 0px; top: 0px; display: none; position: absolute; cursor: pointer;
+}
+#DB_gallery .DB_thumSet .DB_nextPageBtn {
+	top: 0px; right: 0px; display: none; position: absolute; cursor: pointer;
+}
+#DB_gallery .DB_thumSet .DB_thumLine {
+	border: 4px solid #7EC828; left: 0px; top: 0px; width: 100px; height: 65px; position: absolute;
+}

@@ -1,0 +1,43 @@
+﻿@charset "utf-8";
+/* CSS Document reset */
+
+
+
+.FrameMain{width:100%;margin:0 auto;z-index:888;}
+.divMain{width:1120px; margin:0 auto; }
+.MainLeft{float:right; width:280px; min-height:500px;background-color:#ffffff; }
+		.MainLeftMenu{border:0px dotted #dddddd;}
+		.MainLeftMenu .dplHead{height:35px; line-height:35px; border-bottom:2px dotted #fafafa;font-size:16px; font-weight:200; color:#666666; text-align:left; background-image:url(../images/headLine.png);}
+		.MainLeftMenu .dplHead p{float:left;background-image:url(../images/ico.png); background-repeat:no-repeat; background-position:left center; padding-left:30px; margin-top:8px; margin-left:3px; font-size:16px; color:#F5AB00; font-weight:bold; background-color:#fff}
+		.MainLeftMenu .dplHead a{font-size:12px; font-weight:200; color:#aaaaaa;}
+		.MainLeftMenu .dplMain{width:100%;  }
+		.MainLeftMenu .dplMain li{float:left; width:100%; height:35px;line-height:35px; border-bottom:1px solid #eeeeee;background-image:url(../images/arrow.png); background-repeat:no-repeat; margin-left:2px; margin-top:5px;}
+		.MainLeftMenu .dplMain li a{float:left; margin-left:30px;}		
+		.MainLeftMenu .dplMain li:hover{float:left;  background-color:#FFF; background-image:url(../images/arrow_y.png); background-repeat:no-repeat;}
+		.MainLeftMenu .dplMain li a:hover{ color:#03F}
+		.MainLeftMenu .nowHover{float:left;  background-color:#FFF; background-image:url(../images/arrow_y.png); background-repeat:no-repeat;}
+#hoverNew{float:left;  background-color:#FFF; background-image:url(../images/arrow_y.png); background-repeat:no-repeat;}
+
+
+		.MainLeftContact{border:1px dotted #dddddd;}
+		.MainLeftContact .dplHead{height:35px; line-height:35px; background-color:#fafafa; border-bottom:1px dotted #eeeeee;font-size:16px; font-weight:200; color:#666666; text-align:left;}
+		.MainLeftContact .dplHead p{float:right; width:100px; text-align:right}
+		.MainLeftContact .dplHead a{font-size:12px; font-weight:200; color:#aaaaaa;}
+		.MainLeftContact .dplMain{width:100%; height:240px; }
+		.MainLeftContact .dplMain p{margin:10px; line-height:1.5}
+.MainRight{float:left;width:800px;}
+	.MainRight h4{width:800px;text-align:left;border-bottom:2px solid #F5AA00; margin-bottom:15px; margin-top:1px;}
+	
+					
+	.myThreads{width:800px; margin:0 auto; height:auto}
+		.myThreads dl{float:left; width:800px; margin-bottom:15px;}
+		.myThreads .logo{float:left; width:100px;height:80px;border-bottom:1px solid #B3B1B2;}
+		.myThreads .logo img{width:100px; height:80px;}
+		.myThreads .title{float:left; width:500px;height:30px; margin-left:10px;}
+		.myThreads .memo{float:left; width:500px;height:50px; margin-left:10px;}
+		.myThreads .control{float:left;margin-left:8px;width:180px;height:80px; font-size:12px;}
+
+.bbsContent{float:left; width:800px;}
+.bbsReplayList{float:left; width:800px;}
+.bbsReplayList li{float:left; width:100%;}
+.bbsReplayDo{float:left; width:800px;}					

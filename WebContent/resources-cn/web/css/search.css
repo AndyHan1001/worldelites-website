@@ -1,0 +1,16 @@
+﻿@charset "utf-8";
+/* CSS Document reset */
+.searchResult div{clear:both}
+.divSearchWords{position:relative;}
+.searchResult{width:564px;border:2px solid #ccc;border-top:none;height:300px; background-color:#ffffff;;position:absoulute; margin-left:17px;overflow:hidden;overflow-y:auto;}
+.searchResult dl{width:561px;float:left;padding:5px;}
+.searchResult dt{width:20px;height:25px;float:left}
+.searchResult img{width:15px;}
+.searchResult dd{width:521px;text-indent:5px;float:left;cursor:pointer;}
+.searchResult dd span{display:block;width:100px;height:25px;line-height:25px;float:right}
+
+.searchResult ul{width:561px;display:none}
+.searchResult li{width:540px;padding-left:16px;height:25px;line-height:25px;margin-top:5px;}
+.searchResult li span{display:block;width:25px;height:25px;float:left;margin-right:5px;}
+.searchResult li a{text-align:left; float:left;cursor:pointer}
+.socovo{font-weight:bold;}
